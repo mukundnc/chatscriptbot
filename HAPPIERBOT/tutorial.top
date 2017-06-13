@@ -1,0 +1,73 @@
+
+topic: ~INTRODUCTIONS repeat keep (~emogoodbye ~emohello ~emohowzit name )
+
+t: HI() [Hello] [Hi] [Hey], how are you doing? 
+ 
+t: START() I can help you with user details. Just type who is mukund.
+
+u: NAME (<<who ![extension manager hr extension contact ~places] _{~fnames} _{~lnames}>>) $fname='_0  $lname='_1
+    if($fname or $lname){
+        $type=1
+        ^getuserdetails($fname $lname)     
+        ^selectuserdetails()      
+    } else{
+        No such user exists
+    }
+
+u: LNAME (_~lnames ![extension manager hr extension contact ~places] $fname) $lname='_0 
+    ^getuserdetails($fname $lname)    
+    ^selectuserdetails()  
+
+u: FNAME (_~fnames ![extension manager hr extension contact ~places] $lname) $fname='_0 
+    ^getuserdetails($fname $lname)    
+    ^selectuserdetails()  
+
+u: EXTENSION (<<extension _{~fnames} _{~lnames}>>) $fname='_0  $lname='_1
+    $type=2
+    if($fname or $lname){
+        ^getuserdetails($fname $lname)
+    }
+    ^selectuserdetails()      
+
+u: MANAGER (!["hr"] <<manager _{~fnames} _{~lnames}>>) $fname='_0  $lname='_1
+    $type=3
+    if($fname or $lname){
+        ^getuserdetails($fname $lname)
+    }
+    ^selectuserdetails()
+
+u: HRMANAGER (<<"hr" manager  _{~fnames} _{~lnames}>>) $fname='_0 $lname='_1 
+    $type=4
+    if($fname or $lname){
+        ^getuserdetails($fname $lname)
+    }
+    ^selectuserdetails()
+
+u: CONTACT (<<~contact _{~fnames} _{~lnames}>>) $fname='_0 $lname='_1 
+    $type=5
+    if($fname or $lname){
+        ^getuserdetails($fname $lname)
+    }
+    ^selectuserdetails()
+
+u: LOCATION (<<~places _{~fnames} _{~lnames}>>) $fname='_0 $lname='_1 
+    $type=6
+    if($fname or $lname){
+        ^getuserdetails($fname $lname)
+    }
+    ^selectuserdetails()
+    
+#u: () ^reuse ( START ) 
+
+u: LEAVE (<<apply _[~leavetypes] leave>>) You want to apply _0 leave?
+    a: (~yes) applied
+    a: (~no) ok but why?
+    a: () ^REUSE(LEAVE)
+
+u: TLEAVE(<<apply ![~leavetypes] leave>>) Which leave you want to apply? sick/casual
+    a: (_~leavetypes) you want to apply for _0 leave?
+        b: (~yes) applied
+        b: (~no) ok but why?
+        a: TLEAVE()
+
+

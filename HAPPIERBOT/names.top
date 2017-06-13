@@ -1,0 +1,71 @@
+
+
+#topic: ~names [mukund chirag gaurav]
+#topic: ~lnames [nc kakani tolani]
+topic: ~leavetypes [sick casual compensatory compoff floating]
+topic: ~places [location place]
+topic: ~contact ["contact information" "contact details"]
+#t:() ^mongoinit ( localhost:27017 ChatScript topic: users )
+
+  
+outputmacro: ^getuserdetails(^argument1 ^argument2)
+    #--- ^argument1 ^argument2  ----
+    $header = "User-Agent: Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; WOW64; Trident/6.0)"
+    $URL = "https://mukundan-dot-dev-happierhr.appspot.com/appintegration/chatbot"
+    $tmp = ^jsonopen(POST $URL ^"{\"type\": \"name\", \"name\": \"^argument1 ^argument2\"}" $header)
+    $success = ^jsonpath(".result" $tmp safe)
+    #--- $success ---
+    if($success == "success"){
+        $count = ^jsonpath(".userdetails.count" $tmp safe)
+        #--- $count ---
+        if($count > 1){
+            $_i = 0
+            $names=\
+            loop($count){
+                $lnamesearch = ^jsonpath(".userdetails.lnamesearch" $tmp safe)  
+                if($lnamesearch){
+                    $tname = ^jsonpath(".userdetails.names.$_i.lname" $tmp safe)
+                } else{
+                    $tname = ^jsonpath(".userdetails.names.$_i.fname" $tmp safe)
+                }                
+                $names = ^"$tname $names"
+                $_i += 1
+            }
+        }else {
+            $manager = ^jsonpath(".userdetails.manager" $tmp safe)
+            $hrmanager = ^jsonpath(".userdetails.hrmanager" $tmp safe)
+            $email = ^jsonpath(".userdetails.contact.email" $tmp safe)
+            $extension = ^jsonpath(".userdetails.contact.extension" $tmp safe)
+            $contactno = ^jsonpath(".userdetails.contact.number1" $tmp safe)
+            $location = ^jsonpath(".userdetails.location" $tmp safe)
+            $firstname = ^jsonpath(".userdetails.fname" $tmp safe)
+            $lastname = ^jsonpath(".userdetails.lname" $tmp safe)
+        }
+    }
+    
+    
+outputmacro: ^selectuserdetails()        
+    if($success == "success" and $count == 1)  {
+        if($type == 1){
+            What do you want to know about $firstname? manager/hr manager/extension/contact information/location           
+        } else if($type == 2){
+            $firstname's extension is $extension
+        } else if($type == 3){
+            $firstname's manager is $manager
+        } else if($type == 4){
+            $firstname's manager is $hrmanager
+        } else if($type == 5){
+            $firstname's email id is $email and contact number is $contactno 
+        } else if($type == 6){
+            $firstname works from $location  
+        }
+    } else if($success == "success" and $count > 1 and $lnamesearch){
+        multiple user with $fname select last name from $names
+    } else if($success == "success" and $count > 1 and !$lnamesearch){
+        multiple user with $lname select first name from $names
+    } else{
+        No such user exists
+    }
+
+
+    

@@ -1,0 +1,16 @@
+RAWDATA/HAPPIERBOT/simplecontrol.top 
+# default bot control
+RAWDATA/HAPPIERBOT/names.top 
+RAWDATA/HAPPIERBOT/firstnames.top 
+RAWDATA/HAPPIERBOT/lastnames.top 
+RAWDATA/HAPPIERBOT/tutorial.top 
+# tutorial bot data
+#RAWDATA/MONGO/simplecontrol.top 
+#RAWDATA/MONGO/simpletopic.top 
+
+
+
+
+
+
+
