@@ -1,11 +1,12 @@
 
-topic: ~INTRODUCTIONS repeat keep (~emogoodbye ~emohello ~emohowzit name )
+concept: ~fnames MORE (I)
+topic: ~INTRODUCTIONS repeat keep (~emogoodbye ~emohello ~emohowzit name here ) 
 
 t: HI() [Hello] [Hi] [Hey], how are you doing? 
  
-t: START() I can help you with user details. Just type who is mukund.
+t: START() &&&& I can help you with user details. Just type who is mukundan.
 
-u: NAME (<<who ![extension manager hr extension contact ~places] _{~fnames} _{~lnames}>>) $fname='_0  $lname='_1
+u: NAME (<<who ![extension manager hr extension contact ~places ~general ~teamd ~pplan] _{~fnames} _{~lnames}>>) $fname='_0  $lname='_1
     if($fname or $lname){
         $type=1
         ^getuserdetails($fname $lname)     
@@ -14,11 +15,11 @@ u: NAME (<<who ![extension manager hr extension contact ~places] _{~fnames} _{~l
         No such user exists
     }
 
-u: LNAME (_~lnames ![extension manager hr extension contact ~places] $fname) $lname='_0 
+u: LNAME (_~lnames ![extension manager hr extension contact ~places ~general ~teamd ~pplan] $fname) $lname='_0 
     ^getuserdetails($fname $lname)    
     ^selectuserdetails()  
 
-u: FNAME (_~fnames ![extension manager hr extension contact ~places] $lname) $fname='_0 
+u: FNAME (_~fnames ![extension manager hr extension contact ~places ~general ~teamd ~pplan] $lname) $fname='_0 
     ^getuserdetails($fname $lname)    
     ^selectuserdetails()  
 
@@ -59,15 +60,41 @@ u: LOCATION (<<~places _{~fnames} _{~lnames}>>) $fname='_0 $lname='_1
     
 #u: () ^reuse ( START ) 
 
-u: LEAVE (<<apply _[~leavetypes] leave>>) You want to apply _0 leave?
-    a: (~yes) applied
-    a: (~no) ok but why?
-    a: () ^REUSE(LEAVE)
+u: LEAVE (<<apply _[~leavetypes] leave>>) $ltype='_0 Please provide reason
+    a: REASON (_*) $reason='_0 Please enter day/date/period 
+        b: FROMTO (_~dateinfo _{~dateinfo}) $fromdate='_0 $todate='_1 Please confirm?
+            c: ( ~yes )
+                ^applyleave($ltype $reason $fromdate $todate) 
+            c: ( ~no )
+                ok but why?
+                d: () [Oh I see] [Nice one] [Really] [Good for you]
+            c: () ^reuse( FROMTO )
 
-u: TLEAVE(<<apply ![~leavetypes] leave>>) Which leave you want to apply? sick/casual
-    a: (_~leavetypes) you want to apply for _0 leave?
-        b: (~yes) applied
-        b: (~no) ok but why?
-        a: TLEAVE()
+        b: ONDAY(_~days _{~days}) $fromdate='_0 $todate='_1 Please confirm?
+            c: ( ~yes )
+                ^applyleave($ltype $reason $fromdate $todate) 
+            c: ( ~no )
+                ok but why?
+                d: () [Oh I see] [Nice one] [Really] [Good for you]
+            c: () ^reuse( ONDAY )
+        
 
 
+u: TLEAVE(<<apply ![~leavetypes] leave>>) Select the type of leave?"@@@"sick/casual/compensatory/floating
+    a: (_~leavetypes) $ltype='_0
+        ^reuse( LEAVE )
+
+u: GENERALINFO (<<_~general _~days>>) $infotype='_0 $forday='_1
+    ^generalInfo($infotype $forday)
+
+u: TEAMINFO(<<~teamd _{~fnames} _{~lnames} >>) $fname='_0  $lname='_1
+    $type=7
+    if($fname or $lname){
+        ^getuserdetails($fname $lname)
+    }
+    ^selectuserdetails()
+
+u: PERSONALPLAN(<<~pplan _{~days} _{~fnames}>>) $planday='_0 $planname='_1
+    ^personalplan($planday $planname)
+
+u: () ^reuse ( START ) 
