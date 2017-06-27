@@ -2,9 +2,13 @@
 
 #topic: ~names [mukund chirag gaurav]
 #topic: ~lnames [nc kakani tolani]
-topic: ~leavetypes [sick casual compensatory compoff floating]
-topic: ~places [location place]
-topic: ~contact ["contact information" "contact details"]
+CONCEPT: ~leavetypes [sick casual compensatory compoff floating]
+CONCEPT: ~places [location place]
+CONCEPT: ~contact [contact "contact info*" "contact details"]
+CONCEPT: ~days [today yesterday tomorrow week]
+CONCEPT: ~general [wish anniversary holiday birthday leave]
+CONCEPT: ~teamd [team "team info*" "team details"]
+CONCEPT: ~pplan [plan schedule]
 #t:() ^mongoinit ( localhost:27017 ChatScript topic: users )
 
   
@@ -12,7 +16,8 @@ outputmacro: ^getuserdetails(^argument1 ^argument2)
     #--- ^argument1 ^argument2  ----
     $header = "User-Agent: Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; WOW64; Trident/6.0)"
     $URL = "https://mukundan-dot-dev-happierhr.appspot.com/appintegration/chatbot"
-    $tmp = ^jsonopen(POST $URL ^"{\"type\": \"name\", \"name\": \"^argument1 ^argument2\"}" $header)
+    $tmp = ^jsonopen(POST $URL ^"{\"userid\": %user, \"type\": \"userinfo\", \"name\": \"^argument1 ^argument2\"}" $header)
+    #^jsontree($tmp)
     $success = ^jsonpath(".result" $tmp safe)
     #--- $success ---
     if($success == "success"){
@@ -24,11 +29,11 @@ outputmacro: ^getuserdetails(^argument1 ^argument2)
             loop($count){
                 $lnamesearch = ^jsonpath(".userdetails.lnamesearch" $tmp safe)  
                 if($lnamesearch){
-                    $tname = ^jsonpath(".userdetails.names.$_i.lname" $tmp safe)
+                    $tname = ^jsonpath(".userdetails.names[$_i].lname" $tmp safe)
                 } else{
-                    $tname = ^jsonpath(".userdetails.names.$_i.fname" $tmp safe)
+                    $tname = ^jsonpath(".userdetails.names[$_i].fname" $tmp safe)
                 }                
-                $names = ^"$tname $names"
+            $names = ^"$tname/$names"
                 $_i += 1
             }
         }else {
@@ -40,14 +45,23 @@ outputmacro: ^getuserdetails(^argument1 ^argument2)
             $location = ^jsonpath(".userdetails.location" $tmp safe)
             $firstname = ^jsonpath(".userdetails.fname" $tmp safe)
             $lastname = ^jsonpath(".userdetails.lname" $tmp safe)
+            $members = ^jsonpath(".userdetails.teammembers" $tmp safe)
+            $teammembers=\
+            $_j = 0
+            $tcount = ^length($members)
+            loop($tcount){
+                    $tname = ^jsonpath(".userdetails.teammembers[$_j]" $tmp safe)                    
+                    $teammembers = ^"$tname/$teammembers"
+                    $_j += 1
+            }            
         }
     }
     
     
-outputmacro: ^selectuserdetails()        
+outputmacro: ^selectuserdetails()    
     if($success == "success" and $count == 1)  {
         if($type == 1){
-            What do you want to know about $firstname? manager/hr manager/extension/contact information/location           
+            What do you want to know about $firstname?"@@@"manager/hr manager/extension/contact information/location           
         } else if($type == 2){
             $firstname's extension is $extension
         } else if($type == 3){
@@ -58,14 +72,73 @@ outputmacro: ^selectuserdetails()
             $firstname's email id is $email and contact number is $contactno 
         } else if($type == 6){
             $firstname works from $location  
+        } else if($type == 7){
+            $firstname team members are $teammembers  
         }
     } else if($success == "success" and $count > 1 and $lnamesearch){
-        multiple user with $fname select last name from $names
+        Select last name "@@@" $names
     } else if($success == "success" and $count > 1 and !$lnamesearch){
-        multiple user with $lname select first name from $names
+        Select first name "@@@" $names
     } else{
         No such user exists
     }
 
+outputmacro: ^applyleave(^argument1 ^argument2 ^argument3 ^argument4)
+    #--- ^argument1 ^argument2 ^argument3 ^argument4  ----
+    $header = "User-Agent: Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; WOW64; Trident/6.0)"
+    $URL = "https://mukundan-dot-dev-happierhr.appspot.com/appintegration/chatbot"
+    $tmp = ^jsonopen(POST $URL ^"{\"userid\": %user , \"type\": \"leaveapply\", \"leavetype\": \"^argument1\", \"reason\": \"^argument2\", \"fromdate\": \"^argument3\", \"todate\": \"^argument4\" }" $header)
+    $success = ^jsonpath(".result" $tmp safe)
+    $message = ^jsonpath(".message" $tmp safe)
+    if($success == "success"){
+        $message
+    } else{
+        Failed to apply leave $message
+    }
 
+outputmacro: ^generalInfo(^argument1 ^argument2)
+    #--- ^argument1 ----
+    $header = "User-Agent: Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; WOW64; Trident/6.0)"
+    $URL = "https://mukundan-dot-dev-happierhr.appspot.com/appintegration/chatbot"
+    $tmp = ^jsonopen(POST $URL ^"{\"userid\": %user , \"type\": \"generalinfo\", \"infotype\": \"^argument1\", \"forday\": \"^argument2\" }" $header)
+    $success = ^jsonpath(".result" $tmp safe)
     
+    if($success == "success"){
+        $users = ^jsonpath(".users" $tmp safe)        
+        $gtcount = ^length($users)
+        if($gtcount <= 0){
+            if(^argument1 != "leave"){
+                No one to wish
+            } else {
+                No one is on leave
+            }
+        } else {
+            $_k = 0
+            $umembers=\
+            loop($gtcount){
+                    $tname = ^jsonpath(".users[$_k]" $tmp safe) 
+                    $umembers = ^"$tname/$umembers"
+                    $_k += 1
+            }   
+            if(^argument1 != "leave"){
+                You can wish "@@@" $umembers
+            } else {
+                People on leave are $umembers
+            }
+        }
+    } else{
+        Failed to get information $message
+    }
+
+outputmacro: ^personalplan(^argument1 ^argument2)
+    #--- ^argument1 ^argument2 ----
+    $header = "User-Agent: Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; WOW64; Trident/6.0)"
+    $URL = "https://mukundan-dot-dev-happierhr.appspot.com/appintegration/chatbot"
+    $tmp = ^jsonopen(POST $URL ^"{\"userid\": %user , \"type\": \"personalplan\", \"planday\": \"^argument1\", \"planname\": \"^argument2\"}" $header)
+    $success = ^jsonpath(".result" $tmp safe)
+
+    if($success == "success"){
+        Events for ^argument2 are 2-3 interview, 4-5 anniversary celebration
+    } else{
+        Failed to get data from server $message
+    }
