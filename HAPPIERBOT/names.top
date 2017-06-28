@@ -1,16 +1,14 @@
-
-
 #topic: ~names [mukund chirag gaurav]
 #topic: ~lnames [nc kakani tolani]
 CONCEPT: ~leavetypes [sick casual compensatory compoff floating]
 CONCEPT: ~places [location place]
 CONCEPT: ~contact [contact "contact info*" "contact details"]
 CONCEPT: ~days [today yesterday tomorrow week]
-CONCEPT: ~general [wish anniversary holiday birthday leave]
+CONCEPT: ~general [wish anniversary holiday birthday]
 CONCEPT: ~teamd [team "team info*" "team details"]
 CONCEPT: ~pplan [plan schedule]
 #t:() ^mongoinit ( localhost:27017 ChatScript topic: users )
-
+concept: ~fnames MORE (I)
   
 outputmacro: ^getuserdetails(^argument1 ^argument2)
     #--- ^argument1 ^argument2  ----
@@ -24,11 +22,11 @@ outputmacro: ^getuserdetails(^argument1 ^argument2)
         $count = ^jsonpath(".userdetails.count" $tmp safe)
         #--- $count ---
         if($count > 1){
+            $lnamesearch = ^jsonpath(".userdetails.lnamesearch" $tmp safe)  
             $_i = 0
             $names=\
             loop($count){
-                $lnamesearch = ^jsonpath(".userdetails.lnamesearch" $tmp safe)  
-                if($lnamesearch){
+                 if($lnamesearch == false){
                     $tname = ^jsonpath(".userdetails.names[$_i].lname" $tmp safe)
                 } else{
                     $tname = ^jsonpath(".userdetails.names[$_i].fname" $tmp safe)
@@ -75,9 +73,9 @@ outputmacro: ^selectuserdetails()
         } else if($type == 7){
             $firstname team members are $teammembers  
         }
-    } else if($success == "success" and $count > 1 and $lnamesearch){
+    } else if($success == "success" and $count > 1 and $lnamesearch==false){
         Select last name "@@@" $names
-    } else if($success == "success" and $count > 1 and !$lnamesearch){
+    } else if($success == "success" and $count > 1 and $lnamesearch==true){
         Select first name "@@@" $names
     } else{
         No such user exists
