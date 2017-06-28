@@ -1,0 +1,70 @@
+topic: ~USERINFO repeat keep (who ~fnames ~lnames) 
+
+u: NAME (<<who ![extension manager hr extension contact ~places ~general ~teamd ~pplan] _{~fnames} _{~lnames}>>) $fname='_0  $lname='_1
+    if($fname or $lname){
+        $type=1
+        ^getuserdetails($fname $lname)     
+        ^selectuserdetails()      
+    } else{
+        No such user exists
+    }
+
+u: LNAME (_~lnames ![extension manager hr extension contact ~places ~general ~teamd ~pplan] $fname) $lname='_0 
+    ^getuserdetails($fname $lname)    
+    ^selectuserdetails()  
+
+u: FNAME (_~fnames ![extension manager hr extension contact ~places ~general ~teamd ~pplan] $lname) $fname='_0 
+    ^getuserdetails($fname $lname)    
+    ^selectuserdetails()  
+
+u: EXTENSION (<<extension _{~fnames} _{~lnames}>>) $fname='_0  $lname='_1
+    $type=2
+    if($fname or $lname){
+        ^getuserdetails($fname $lname)
+    }
+    ^selectuserdetails()      
+
+u: MANAGER (!["hr"] <<manager _{~fnames} _{~lnames}>>) $fname='_0  $lname='_1
+    $type=3
+    if($fname or $lname){
+        ^getuserdetails($fname $lname)
+    }
+    ^selectuserdetails()
+
+u: HRMANAGER (<<"hr" manager  _{~fnames} _{~lnames}>>) $fname='_0 $lname='_1 
+    $type=4
+    if($fname or $lname){
+        ^getuserdetails($fname $lname)
+    }
+    ^selectuserdetails()
+
+u: CONTACT (<<~contact _{~fnames} _{~lnames}>>) $fname='_0 $lname='_1 
+    $type=5
+    if($fname or $lname){
+        ^getuserdetails($fname $lname)
+    }
+    ^selectuserdetails()
+
+u: LOCATION (<<~places _{~fnames} _{~lnames}>>) $fname='_0 $lname='_1 
+    $type=6
+    if($fname or $lname){
+        ^getuserdetails($fname $lname)
+    }
+    ^selectuserdetails()
+    
+#u: () ^reuse ( START ) 
+
+u: GENERALINFO (<<_~general _~days>>) $infotype='_0 $forday='_1
+    ^generalInfo($infotype $forday)
+
+u: TEAMINFO(<<~teamd _{~fnames} _{~lnames} >>) $fname='_0  $lname='_1
+    $type=7
+    if($fname or $lname){
+        ^getuserdetails($fname $lname)
+    }
+    ^selectuserdetails()
+
+u: PERSONALPLAN(<<~pplan _{~days} _{~fnames}>>) $planday='_0 $planname='_1
+    ^personalplan($planday $planname)
+
+u: () gambit(introductions)
