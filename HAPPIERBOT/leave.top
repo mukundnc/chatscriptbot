@@ -1,0 +1,34 @@
+topic: ~LEAVE repeat keep (apply ~leavetypes)
+
+u: ONDAY(_~days _{~days}) $fromdate='_0 $todate='_1 $dummyleave=null
+
+u: FROMTO (_~dateinfo _{~dateinfo}) $fromdate='_0 $todate='_1 $dummyleave=null
+
+u: LEAVETYPE ( _~leavetypes ) $ltype='_0 $dummyleave=null
+
+u: LEAVER (<< apply leave [~LEAVE ~]>> )$dummyleave=null Please provide reason 
+    a: REASON (_*) $reason='_0 
+
+u: LEAVET([~LEAVE ~] !$ltype !$dummyleave) 
+    # ----- $ltype $reason $fromdate ------
+    Select the type of leave?"@@@"sick/casual/compensatory/floating
+        
+u: REASON([~LEAVE ~] !$reason !$dummyleave) 
+    # ----- $ltype $reason $fromdate ------
+    ^reuse( LEAVER ) 
+
+u: TIMEPERIOD([~LEAVE ~] !$fromdate !$dummyleave) 
+    # ----- $ltype $reason $fromdate ------
+    Please enter day/date/period 
+
+u: CONFIRM([~LEAVE ~] $ltype $reason $fromdate !$dummyleave) Please confirm?
+    # ----- $ltype $reason $fromdate ------
+    a: ( ~yes )
+        ^applyleave($ltype $reason $fromdate $todate) 
+        $ltype=null $reason=null $fromdate=null $todate=null $dummyleave=dummy
+    a: ( ~no )
+        cancelled leave application
+        $ltype=null $reason=null $fromdate=null $todate=null $dummyleave=dummy
+    a: () ^reuse( CONFIRM )
+
+u: () gambit(introductions)
