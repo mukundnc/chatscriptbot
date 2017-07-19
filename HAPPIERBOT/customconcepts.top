@@ -3,13 +3,15 @@
 CONCEPT: ~leavetypes [sick casual compensatory compoff floating]
 CONCEPT: ~places [location place]
 CONCEPT: ~contact [contact "contact info*" "contact details"]
-CONCEPT: ~days [today yesterday tomorrow week]
+CONCEPT: ~days [today yesterday tomorrow week monday tuesday wednesday thursday friday saturday sunday]
 CONCEPT: ~general [wish anniversary holiday birthday]
 CONCEPT: ~teamd [team "team info*" "team details"]
 CONCEPT: ~pplan [plan schedule]
 #t:() ^mongoinit ( localhost:27017 ChatScript topic: users )
 concept: ~fnames MORE (I)
-  
+concept: ~yes MORE (y yeah ok fine good)
+concept: ~no MORE (n naah not wrong bad)
+
 outputmacro: ^getuserdetails(^argument1 ^argument2)
     #--- ^argument1 ^argument2  ----
     $header = "User-Agent: Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; WOW64; Trident/6.0)"
@@ -56,7 +58,7 @@ outputmacro: ^getuserdetails(^argument1 ^argument2)
     }
     
     
-outputmacro: ^selectuserdetails()    
+outputmacro: ^selectuserdetails()  
     if($success == "success" and $count == 1)  {
         if($type == 1){
             What do you want to know about $firstname?"@@@"manager/hr manager/extension/contact information/location           
@@ -65,19 +67,19 @@ outputmacro: ^selectuserdetails()
         } else if($type == 3){
             $firstname's manager is $manager
         } else if($type == 4){
-            $firstname's manager is $hrmanager
+            $firstname's HR manager is $hrmanager
         } else if($type == 5){
             $firstname's email id is $email and contact number is $contactno 
         } else if($type == 6){
             $firstname works from $location  
         } else if($type == 7){
-            $firstname team members are $teammembers  
-        }
-    } else if($success == "success" and $count > 1 and $lnamesearch==false){
+            $firstname team members are "@@@" $teammembers  
+        }        
+    } else if($success == "success" and $count > 1 and $lnamesearch==false){        
         Select last name "@@@" $names
     } else if($success == "success" and $count > 1 and $lnamesearch==true){
         Select first name "@@@" $names
-    } else{
+    } else{        
         No such user exists
     }
 
@@ -128,15 +130,23 @@ outputmacro: ^generalInfo(^argument1 ^argument2)
         Failed to get information $message
     }
 
-outputmacro: ^personalplan(^argument1 ^argument2)
+outputmacro: ^personalplan(^argument1)
     #--- ^argument1 ^argument2 ----
-    $header = "User-Agent: Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; WOW64; Trident/6.0)"
-    $URL = "https://mukundan-dot-dev-happierhr.appspot.com/appintegration/chatbot"
-    $tmp = ^jsonopen(POST $URL ^"{\"userid\": %user , \"type\": \"personalplan\", \"planday\": \"^argument1\", \"planname\": \"^argument2\"}" $header)
+    $tmp = ^jsonopen(POST $URL ^"{\"userid\": %user , \"type\": \"personalplan\", \"planday\": \"^argument1\"}" $header)
     $success = ^jsonpath(".result" $tmp safe)
-
     if($success == "success"){
-        Events for ^argument2 are 2-3 interview, 4-5 anniversary celebration
+        $events = ^jsonpath(".events" $tmp safe)       
+        $eventscount = ^length($events)        
+        if($eventscount==0){
+            You not nothing scheduled
+        } else{
+            $_z=0
+            Your schedule ^argument1 "@@@"
+            loop($eventscount){
+                jsonpath(".events[$_z].start_time" $tmp safe) jsonpath(".events[$_z].summary" $tmp safe) /
+            }
+                    
+        }        
     } else{
-        Failed to get data from server $message
+        Failed to get personal plan
     }
