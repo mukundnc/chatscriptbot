@@ -1,8 +1,12 @@
 topic: ~LEAVE repeat keep (apply ~leavetypes)
 
-u: ONDAY(_~days _{~days}) $fromdate='_0 $todate='_1 $dummyleave=null
+u: ONDAY(_~days) $fromdate='_0 $dummyleave=null 
 
-u: FROMTO (_~dateinfo _{~dateinfo}) $fromdate='_0 $todate='_1 $dummyleave=null
+u: ONDAYFT(from _~days to _~days) $fromdate='_0 $todate='_1 $dummyleave=null  
+    
+u: FROMTO (_~dateinfo) $fromdate='_0 $todate='_1 $dummyleave=null
+
+u: FROMTOFT (from _~dateinfo to _{~dateinfo}) $fromdate='_0 $todate='_1 $dummyleave=null
 
 u: LEAVETYPE ( _~leavetypes ) $ltype='_0 $dummyleave=null
 
@@ -21,14 +25,21 @@ u: TIMEPERIOD([~LEAVE ~] !$fromdate !$dummyleave)
     # ----- $ltype $reason $fromdate ------
     Please enter day/date/period 
 
-u: CONFIRM([~LEAVE ~] $ltype $reason $fromdate !$dummyleave) Please confirm?
-    # ----- $ltype $reason $fromdate ------
+u: CONFIRM([~LEAVE ~] $ltype $reason $fromdate !$dummyleave) 
+    if($todate){
+        Applying $ltype leave from $fromdate to $todate with reason $reason. Please confirm? "@@@" yes / no
+    } else{
+        Applying $ltype leave for $fromdate with reason $reason. Please confirm? "@@@" yes / no
+    }
+        
     a: ( ~yes )
         ^applyleave($ltype $reason $fromdate $todate) 
         $ltype=null $reason=null $fromdate=null $todate=null $dummyleave=dummy
+        ^reuse( RESET )
     a: ( ~no )
         cancelled leave application
         $ltype=null $reason=null $fromdate=null $todate=null $dummyleave=dummy
+        ^reuse( RESET )
     a: () ^reuse( CONFIRM )
 
-u: () gambit(introductions)
+u: RESET() ^gambit(~introductions)
