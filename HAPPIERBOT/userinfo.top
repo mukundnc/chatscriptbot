@@ -1,70 +1,38 @@
-topic: ~USERINFO repeat keep (who ~fnames ~lnames) 
+topic: ~USERINFO repeat keep (~emohowzit ~fnames ~lnames) 
 
-u: NAME (<<who ![extension manager hr extension contact ~places ~general ~teamd ~pplan] _{~fnames} _{~lnames}>>) $fname='_0  $lname='_1
-    if($fname or $lname){
-        $type=1
-        ^getuserdetails($fname $lname)     
-        ^selectuserdetails()      
-    } else{
-        No such user exists
-    }
+u: FNAME(_~fnames)  $fname='_0        
+    ^getuserdetails($fname $lname)  
+        
+u: LNAME(_~lnames)  $lname='_0
+    ^getuserdetails($fname $lname)   
 
-u: LNAME (_~lnames ![extension manager hr extension contact ~places ~general ~teamd ~pplan] $fname) $lname='_0 
-    ^getuserdetails($fname $lname)    
+u: NAME( who is ![you]) $type=1 $fname=null $lname=null
     ^selectuserdetails()  
 
-u: FNAME (_~fnames ![extension manager hr extension contact ~places ~general ~teamd ~pplan] $lname) $fname='_0 
-    ^getuserdetails($fname $lname)    
+u: EXTENSION ( extension ) $type=2 $fname=null $lname=null
+    ^selectuserdetails()    
+
+u: MANAGER (!["hr"] manager ) $type=3 $fname=null $lname=null
     ^selectuserdetails()  
 
-u: EXTENSION (<<extension _{~fnames} _{~lnames}>>) $fname='_0  $lname='_1
-    $type=2
-    if($fname or $lname){
-        ^getuserdetails($fname $lname)
-    }
-    ^selectuserdetails()      
+u: HRMANAGER ( <<"hr" manager >> ) $type=4 $fname=null $lname=null
+    ^selectuserdetails()  
 
-u: MANAGER (!["hr"] <<manager _{~fnames} _{~lnames}>>) $fname='_0  $lname='_1
-    $type=3
-    if($fname or $lname){
-        ^getuserdetails($fname $lname)
-    }
-    ^selectuserdetails()
+u: CONTACT ( ~contact ) $type=5 $fname=null $lname=null
+    ^selectuserdetails()  
 
-u: HRMANAGER (<<"hr" manager  _{~fnames} _{~lnames}>>) $fname='_0 $lname='_1 
-    $type=4
-    if($fname or $lname){
-        ^getuserdetails($fname $lname)
-    }
-    ^selectuserdetails()
+u: LOCATION ( ~places ) $type=6 $fname=null $lname=null
+    ^selectuserdetails()  
 
-u: CONTACT (<<~contact _{~fnames} _{~lnames}>>) $fname='_0 $lname='_1 
-    $type=5
-    if($fname or $lname){
-        ^getuserdetails($fname $lname)
-    }
-    ^selectuserdetails()
+u: DAYS ( _~days ) $forday='_0
 
-u: LOCATION (<<~places _{~fnames} _{~lnames}>>) $fname='_0 $lname='_1 
-    $type=6
-    if($fname or $lname){
-        ^getuserdetails($fname $lname)
-    }
-    ^selectuserdetails()
+u: GENERALINFO ( _~general ) $infotype='_0 
+     ^generalInfo($infotype $forday)
+
+u: TEAMINFO( ~teamd ) $type=7 $fname=null $lname=null
+    ^selectuserdetails() 
+
+u: PERSONALPLAN( ~pplan ) 
+    ^personalplan($forday)
     
-#u: () ^reuse ( START ) 
-
-u: GENERALINFO (<<_~general _~days>>) $infotype='_0 $forday='_1
-    ^generalInfo($infotype $forday)
-
-u: TEAMINFO(<<~teamd _{~fnames} _{~lnames} >>) $fname='_0  $lname='_1
-    $type=7
-    if($fname or $lname){
-        ^getuserdetails($fname $lname)
-    }
-    ^selectuserdetails()
-
-u: PERSONALPLAN(<<~pplan _{~days} _{~fnames}>>) $planday='_0 $planname='_1
-    ^personalplan($planday $planname)
-
-u: () gambit(introductions)
+u: () ^gambit(~introductions)
