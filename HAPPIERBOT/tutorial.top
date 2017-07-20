@@ -1,9 +1,45 @@
 
-topic: ~INTRODUCTIONS repeat keep (~emogoodbye ~emohello ~emohowzit) 
+topic: ~INTRODUCTIONS repeat keep (~emogoodbye ~emohello ~emohowzit ~emothanks ~emocurse ~emomaybe ~emolaugh ~emohappy ~emosad ~emosurprise ~emomisunderstand ~emobored ~emoangry ~emodisgust ~emoprotest) 
 
-t: HI() [Hello] [Hi] [Hey], how are you doing? 
- 
-u: START(~emohello) &&&& I can help you with user details. Just type who is mukundan.
+#t: HI() [Hello] [Hi] [Hey], I'm Happierbot, How can I help you?
+
+#u: STARTB(~emohello < [bot happierbot chatbot]) [Hello] [Hi] [Hey], How can I help you? "@@@" Users / Leave / Events / Plan 
+
+#u: BOT(who are you) I'm Happierbot, your personal assistant
+
+u: START(~emohello) [Hello] [Hi] [Hey], I can help you with the below activities "@@@" Users / Leave / Events / Plan 
+
+u: GOODBYE(~emogoodbye) [bye] [see you later] [ok] [tata] [sayonara]
+
+u: THANKS(~emothanks) [Welcome] [Mention Not] [It is my duty]
+
+u: CURSE(~emocurse) [No Please] [I cannot help you] [Control yourself]
+
+u: (~emohowzit) [Sky] [Roof] [You tell me]
+
+u: MAYBE (~emomaybe) [Keep guessing] [Almost there]
+
+u: (~emolaugh) [Lol] [You have nice teeth] [Brush your teeth]
+
+u: (~emohappy) [You sound happy] [Lets go for beer]
+
+u: (~emosad) [Have a beer] [Chill] [Relax]
+
+u: (~emosurprise) [Really] [Seriously]
+
+u: (~emomisunderstand) ^reuse ( MAYBE ) 
+
+u: (~emobored) [Take a break] [Go Trekking]
+
+u: (tell * joke) [I can't] [I would love to but I can't]
+
+u: (~emoangry) [Not good] [Try meditation]
+
+u: (~emodisgust) ^reuse ( CURSE ) 
+
+u: (~emoprotest) ^reuse ( CURSE ) 
+
+u: ( << you funny >>) [I would take it as a compliment] [You should also be like me]
 
 #u: () ^reuse ( START ) 
 
