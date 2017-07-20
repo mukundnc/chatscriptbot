@@ -138,12 +138,12 @@ outputmacro: ^personalplan(^argument1)
         $events = ^jsonpath(".events" $tmp safe)       
         $eventscount = ^length($events)        
         if($eventscount==0){
-            You not nothing scheduled
+            [You've got nothing scheduled] [Your calender is empty] [You are free]
         } else{
             $_z=0
             Your schedule ^argument1 "@@@"
             loop($eventscount){
-                jsonpath(".events[$_z].start_time" $tmp safe) jsonpath(".events[$_z].summary" $tmp safe) /
+                jsonpath(".events[$_z].summary" $tmp safe) /                 
             }
                     
         }        
