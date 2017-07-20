@@ -15,7 +15,7 @@ concept: ~no MORE (n naah not wrong bad)
 outputmacro: ^getuserdetails(^argument1 ^argument2)
     #--- ^argument1 ^argument2  ----
     $header = "User-Agent: Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; WOW64; Trident/6.0)"
-    $URL = "https://mukundan-dot-dev-happierhr.appspot.com/appintegration/chatbot"
+    $URL = "https://bot-dot-happierhr.appspot.com/appintegration/chatbot"
     $tmp = ^jsonopen(POST $URL ^"{\"userid\": %user, \"type\": \"userinfo\", \"name\": \"^argument1 ^argument2\"}" $header)
     #^jsontree($tmp)
     $success = ^jsonpath(".result" $tmp safe)
@@ -86,7 +86,7 @@ outputmacro: ^selectuserdetails()
 outputmacro: ^applyleave(^argument1 ^argument2 ^argument3 ^argument4)
     #--- ^argument1 ^argument2 ^argument3 ^argument4  ----
     $header = "User-Agent: Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; WOW64; Trident/6.0)"
-    $URL = "https://mukundan-dot-dev-happierhr.appspot.com/appintegration/chatbot"
+    $URL = "https://bot-dot-happierhr.appspot.com/appintegration/chatbot"
     $tmp = ^jsonopen(POST $URL ^"{\"userid\": %user , \"type\": \"leaveapply\", \"leavetype\": \"^argument1\", \"reason\": \"^argument2\", \"fromdate\": \"^argument3\", \"todate\": \"^argument4\" }" $header)
     $success = ^jsonpath(".result" $tmp safe)
     $message = ^jsonpath(".message" $tmp safe)
@@ -99,7 +99,7 @@ outputmacro: ^applyleave(^argument1 ^argument2 ^argument3 ^argument4)
 outputmacro: ^generalInfo(^argument1 ^argument2)
     #--- ^argument1 ----
     $header = "User-Agent: Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; WOW64; Trident/6.0)"
-    $URL = "https://mukundan-dot-dev-happierhr.appspot.com/appintegration/chatbot"
+    $URL = "https://bot-dot-happierhr.appspot.com/appintegration/chatbot"
     $tmp = ^jsonopen(POST $URL ^"{\"userid\": %user , \"type\": \"generalinfo\", \"infotype\": \"^argument1\", \"forday\": \"^argument2\" }" $header)
     $success = ^jsonpath(".result" $tmp safe)
     
@@ -132,6 +132,8 @@ outputmacro: ^generalInfo(^argument1 ^argument2)
 
 outputmacro: ^personalplan(^argument1)
     #--- ^argument1 ^argument2 ----
+    $header = "User-Agent: Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; WOW64; Trident/6.0)"
+    $URL = "https://bot-dot-happierhr.appspot.com/appintegration/chatbot"
     $tmp = ^jsonopen(POST $URL ^"{\"userid\": %user , \"type\": \"personalplan\", \"planday\": \"^argument1\"}" $header)
     $success = ^jsonpath(".result" $tmp safe)
     if($success == "success"){
