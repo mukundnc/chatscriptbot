@@ -40,8 +40,6 @@ outputmacro: ^getuserdetails(^argument1 ^argument2)
             $manager = ^jsonpath(".userdetails.manager" $tmp safe)
             $hrmanager = ^jsonpath(".userdetails.hrmanager" $tmp safe)
             $email = ^jsonpath(".userdetails.contact.email" $tmp safe)
-            $extension = ^jsonpath(".userdetails.contact.extension" $tmp safe)
-            $contactno = ^jsonpath(".userdetails.contact.number1" $tmp safe)
             $location = ^jsonpath(".userdetails.location" $tmp safe)
             $firstname = ^jsonpath(".userdetails.fname" $tmp safe)
             $lastname = ^jsonpath(".userdetails.lname" $tmp safe)
@@ -53,7 +51,9 @@ outputmacro: ^getuserdetails(^argument1 ^argument2)
                     $tname = ^jsonpath(".userdetails.teammembers[$_j]" $tmp safe)                    
                     $teammembers = ^"$tname/$teammembers"
                     $_j += 1
-            }            
+            }             
+            $extension = ^jsonpath(".userdetails.contact.extension" $tmp safe)
+            $contactno = ^jsonpath(".userdetails.contact.number1" $tmp safe)
         }
     }
     
